@@ -9,7 +9,7 @@ package
 		public function ludumdare23()
 		{
 			super(160, 120, PlayState, 4, 60, 60);
-			this.forceDebugger = true;
+			forceDebugger = true;
 		}
 	}
 }

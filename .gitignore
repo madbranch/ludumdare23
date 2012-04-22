@@ -1,2 +1,4 @@
 .settings
 bin-debug
+.DS_Store
+*.bak
