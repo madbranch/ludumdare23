@@ -2,6 +2,7 @@ package
 {
 	import org.flixel.*;
 	import org.flixel.plugin.photonstorm.*;
+	import org.flixel.plugin.photonstorm.FX.*;
 	
 	public class Level extends FlxGroup
 	{
@@ -9,6 +10,10 @@ package
 		[Embed(source='/../resources/mapCSV_Group1_Main.csv', mimeType='application/octet-stream')] public var mapCSV:Class;
 		
 		[Embed(source='/../resources/tileset.png')] public var tilesetGraphic:Class;
+		
+		private static const LEVEL_0_BG_COLOR:uint = 0xff444444;
+		private static const LEVEL_1_BG_COLOR:uint = 0xff00006c;
+		private static const LEVEL_2_BG_COLOR:uint = 0xff85beff;
 		
 		public static const TILE_SIZE:Number = 8;
 		private static const TILESET_WIDTH:int = 18;
@@ -20,10 +25,14 @@ package
 		public var width:int;
 		public var height:int;
 		private var _currentLevel:int;
+		private var _plasma:PlasmaFX;
+		private var _soPretty:FlxSprite;
 		
 		public function Level()
 		{
-			super(10);
+			super();
+			
+			FlxG.bgColor = LEVEL_0_BG_COLOR;
 			
 			map = new FlxTilemap();
 			map.loadMap(new mapCSV, tilesetGraphic, TILE_SIZE, TILE_SIZE, FlxTilemap.OFF, 0, 1, 144);
@@ -33,9 +42,37 @@ package
 			width = map.width - TILE_SIZE;
 			height = map.height;
 			
-			add(map);
 			
 			_currentLevel = 0;
+			
+			if (FlxG.getPlugin(FlxSpecialFX) == null)
+			{
+				FlxG.addPlugin(new FlxSpecialFX);
+			}
+			
+			_plasma = FlxSpecialFX.plasma();
+			_soPretty = _plasma.create(0, 0, 78, 80, 5, 5);
+			
+			add(_soPretty);
+			add(map);
+			_soPretty.visible = false;
+		}
+		
+		public override function update() : void
+		{
+			super.update();
+			_soPretty.x = FlxG.camera.x;
+			_soPretty.y = FlxG.camera.y;
+		}
+		
+		public override function destroy() : void
+		{
+			super.destroy();
+			
+			_plasma.destroy();
+			_plasma = null;
+			
+			FlxSpecialFX.clear();
 		}
 		
 		public function get currentLevel() : int
@@ -53,6 +90,22 @@ package
 			{
 				map.setTileByIndex(i, map.getTileByIndex(i) + tileIdDelta);
 			}
+			
+			// We update the background color.
+			switch (value)
+			{
+				case 0:
+					FlxG.bgColor = LEVEL_0_BG_COLOR;
+					break;
+				case 1:
+					FlxG.bgColor = LEVEL_1_BG_COLOR;
+					break;
+				default:
+					FlxG.bgColor = LEVEL_2_BG_COLOR;
+					break;
+			}
+			
+			_soPretty.visible = (value == 3);
 			
 			// We update the current level.
 			_currentLevel = value;

@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.*;
 	
 	public class PlayState extends FlxState
 	{
@@ -9,8 +10,6 @@ package
 		
 		override public function create():void
 		{
-			FlxG.bgColor = 0xff444444;
-			
 			// We initialize the tile map.
 			level = new Level();
 			add(level);
@@ -39,7 +38,7 @@ package
 			super.update();
 			
 			// We make the player collide with the level.
-			FlxG.collide(player, level);
+			FlxG.collide(player, level.map);
 			
 			if (FlxG.keys.justPressed("Z"))
 			{
