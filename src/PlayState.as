@@ -13,6 +13,12 @@ package
 		[Embed(source='/../resources/press_s.png')] public var Level1ControlGraphic:Class;
 		[Embed(source='/../resources/press_d.png')] public var Level2ControlGraphic:Class;
 		[Embed(source='/../resources/press_f.png')] public var Level3ControlGraphic:Class;
+		[Embed(source='/../resources/selector.png')] public var SelectorGraphic:Class;
+		// Player death sound.
+		[Embed(source = "/../resources/hurt.mp3")] public var DeathSfx:Class;
+		// World switch sound.
+		[Embed(source = "/../resources/switch.mp3")] public var SwitchSfx:Class;
+		
 		private var player:Player;
 		private var level:Level;
 		private var score:FlxText;
@@ -22,6 +28,7 @@ package
 		private var level1Control:FlxSprite;
 		private var level2Control:FlxSprite;
 		private var level3Control:FlxSprite;
+		private var selector:FlxSprite;
 		
 		override public function create():void
 		{
@@ -64,20 +71,23 @@ package
 			add(player);
 			add(level.tigers);
 			add(level.star);
+			add(level.sun);
+			add(level.leaf);
 			add(score);
 			add(blockScore);
 			add(level0Control);
 			add(level1Control);
 			add(level2Control);
 			add(level3Control);
+			add(selector);
 			
 			setCurrentLevel(0);
 			// Watches for debugging.
 			//FlxG.watch(player.acceleration, "x", "ax");
 			//FlxG.watch(player.velocity, "x", "vx");
 			//FlxG.watch(player.velocity, "y", "vy");
-			FlxG.watch(FlxG.camera.bounds, "width", "camera width");
-			FlxG.watch(FlxG.camera.bounds, "height", "camera height");
+			
+			FlxG.flash(0xff000000);
 		}
 		
 		override public function update():void
@@ -123,10 +133,27 @@ package
 			FlxG.collide(player, level);
 			FlxG.collide(level.tigers, level);
 			
-			FlxG.overlap(player, level.tigers, hitTiger);
-			if (level.star.alive)
+			if (!FlxG.overlap(player, level.tigers, hitTiger))
 			{
-				FlxG.overlap(player, level.star, hitStar);
+				if (level.star.alive)
+				{
+					FlxG.overlap(player, level.star, hitStar);
+				}
+				
+				if (level.sun.alive)
+				{
+					FlxG.overlap(player, level.sun, hitSun);
+				}
+				
+				if (level.leaf.alive)
+				{
+					FlxG.overlap(player, level.sun, hitLeaf);
+				}
+				
+				if (level.map.getTile(player.tilePosition.x, player.tilePosition.y) == level.getCurrentSpike())
+				{
+					playerDie();
+				}
 			}
 		}
 		
@@ -135,10 +162,34 @@ package
 			if (newCurrentLevel != level.currentLevel)
 			{
 				FlxG.flash(0xffffffff, 0.7, null, true);
+				FlxG.play(SwitchSfx);
 			}
 			level.currentLevel = newCurrentLevel;
 			player.currentLevel = newCurrentLevel;
 			blockScore.play(newCurrentLevel.toString());
+			switch (newCurrentLevel)
+			{
+				case 0:
+					selector.x = level0Control.x;
+					selector.y = level0Control.y;
+					break;
+				case 1:
+					selector.x = level1Control.x;
+					selector.y = level1Control.y;
+					break;
+				case 2:
+					selector.x = level2Control.x;
+					selector.y = level2Control.y;
+					break;
+				case 3:
+					selector.x = level3Control.x;
+					selector.y = level3Control.y;
+					break;
+				default:
+					selector.x = level0Control.x;
+					selector.y = level0Control.y;
+					break;
+			}
 		}
 		
 		private function hitTiger(player : FlxObject, tiger : FlxObject) : void
@@ -154,17 +205,35 @@ package
 			}
 			else
 			{
-				Player(player).restart();
-				FlxG.flash(0xffff0000);
+				playerDie();
 			}
 		}
 		
 		private function hitStar(player : FlxObject, star : FlxObject) : void
 		{
-			setCurrentLevel(1);
 			unlockedLevel = 1;
+			setCurrentLevel(1);
 			refreshControlDisplay();
 			level.star.kill();
+			this.player.setStartPosition(this.player.tilePosition.x, this.player.tilePosition.y);
+		}
+		
+		private function hitSun(player : FlxObject, sun : FlxObject) : void
+		{
+			unlockedLevel = 2;
+			setCurrentLevel(2);
+			refreshControlDisplay();
+			level.sun.kill();
+			this.player.setStartPosition(this.player.tilePosition.x, this.player.tilePosition.y);
+		}
+		
+		private function hitLeaf(player : FlxObject, sun : FlxObject) : void
+		{
+			unlockedLevel = 3;
+			setCurrentLevel(3);
+			refreshControlDisplay();
+			level.leaf.kill();
+			this.player.setStartPosition(this.player.tilePosition.x, this.player.tilePosition.y);
 		}
 		
 		private function initializeControlDisplay() : void
@@ -186,15 +255,29 @@ package
 			level3Control.scrollFactor.x = 0;
 			level3Control.scrollFactor.y = 0;
 			
+			selector = new FlxSprite(0, 0, SelectorGraphic);
+			selector.scrollFactor.x = 0;
+			selector.scrollFactor.y = 0;
+			selector.offset.x = 1;
+			selector.offset.y = 1;
+			
 			refreshControlDisplay();
 		}
 		
 		private function refreshControlDisplay() : void
 		{
+			selector.visible = unlockedLevel >= 1;
 			level0Control.visible = unlockedLevel >= 1;
 			level1Control.visible = unlockedLevel >= 1;
 			level2Control.visible = unlockedLevel >= 2;
 			level3Control.visible = unlockedLevel >= 3;
+		}
+		
+		private function playerDie() : void
+		{
+			FlxG.play(DeathSfx);
+			Player(player).restart();
+			FlxG.flash(0xffff0000);
 		}
 	}
 }

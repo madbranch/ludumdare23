@@ -16,13 +16,15 @@ package
 		private static const LEVEL_2_BG_COLOR:uint = 0xff85beff;
 		
 		public static const TILE_SIZE:Number = 8;
-		public static const TILESET_WIDTH:int = 52;
+		public static const TILESET_WIDTH:int = 53;
 		public static const TILESET_HEIGHT:int = 8;
 		public static const TILESET_SIZE:int = TILESET_WIDTH * TILESET_HEIGHT;
 		
 		public var map:FlxTilemap;
 		public var tigers:Tigers;
 		public var star:Star;
+		public var sun:Sun;
+		public var leaf:Leaf;
 		
 		public var width:int;
 		public var height:int;
@@ -132,6 +134,11 @@ package
 			return _currentLevel * TILESET_WIDTH;
 		}
 		
+		public function getCurrentSpike() : uint
+		{
+			return _currentLevel * TILESET_WIDTH + 52;
+		}
+		
 		private function initTileProperties() : void
 		{
 			var offset:int;
@@ -143,6 +150,7 @@ package
 				{
 					map.setTileProperties(j + i, FlxObject.ANY);
 				}
+				map.setTileProperties(52 + i, FlxObject.NONE);
 			}
 			
 			// Unlocked level 1 tiles.
@@ -170,6 +178,8 @@ package
 		private function initializePickups() : void
 		{
 			star = new Star(3, 12);
+			sun = new Sun(56, 3);
+			leaf = new Leaf(52, 33);
 		}
 		
 		public static function isTileIdCollidable(tileId:uint) : Boolean

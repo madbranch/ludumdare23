@@ -102,6 +102,12 @@ package
 			reset(_start.x, _start.y);
 		}
 		
+		public function setStartPosition(newX : uint, newY : uint) : void
+		{
+			_start.x = newX * Level.TILE_SIZE;
+			_start.y = newY * Level.TILE_SIZE;
+		}
+		
 		override public function destroy(): void
 		{
 			super.destroy();
