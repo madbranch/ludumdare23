@@ -173,13 +173,15 @@ package
 			tigers.addTiger(12, 11);
 			tigers.addTiger(3, 22);
 			tigers.addTiger(33, 15);
+			tigers.addTiger(48, 16);
+			tigers.addTiger(40, 18);
 		}
 		
 		private function initializePickups() : void
 		{
 			star = new Star(3, 12);
 			sun = new Sun(56, 3);
-			leaf = new Leaf(52, 33);
+			leaf = new Leaf(27, 13);
 		}
 		
 		public static function isTileIdCollidable(tileId:uint) : Boolean
