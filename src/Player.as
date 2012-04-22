@@ -22,6 +22,7 @@ package
 		
 		private var _cursor:FlxSprite;
 		private var _currentLevel:int;
+		private var _start:FlxPoint;
 		
 		/**
 		 * Default and parameterized constructor.
@@ -31,7 +32,9 @@ package
 		public function Player(X:Number=0, Y:Number=0)
 		{
 			// We call FlxSprite's constructor.
-			super(X, Y);
+			super(X * Level.TILE_SIZE, Y * Level.TILE_SIZE);
+			
+			_start = new FlxPoint(x, y);
 			
 			// We initialize the player's graphic.
 			loadGraphic(PlayerGraphic, true, true, 5, 9, true);
@@ -59,7 +62,7 @@ package
 			FlxControl.create(this, FlxControlHandler.MOVEMENT_ACCELERATES, FlxControlHandler.STOPPING_DECELERATES, 1, true, false);
 			
 			FlxControl.player1.setCursorControl(false, false, true, true);
-			FlxControl.player1.setJumpButton("UP", FlxControlHandler.KEYMODE_JUST_DOWN, 100, FlxObject.FLOOR, 125, 100);
+			FlxControl.player1.setJumpButton("UP", FlxControlHandler.KEYMODE_PRESSED, 100, FlxObject.FLOOR, 125, 100);
 			FlxControl.player1.setMovementSpeed(200, 0, 50, 100, 200, 0);
 			FlxControl.player1.setGravity(0, 200);
 			
@@ -92,6 +95,11 @@ package
 			FlxG.watch(tileInFront, "x", "dst X");
 			FlxG.watch(tileInFront, "y", "dst Y");
 			FlxG.watch(this, "nbTiles", "nb of tiles");
+		}
+		
+		public function restart() : void
+		{
+			reset(_start.x, _start.y);
 		}
 		
 		override public function destroy(): void
@@ -133,6 +141,15 @@ package
 			else if (x + width > FlxG.camera.bounds.right)
 			{
 				x = FlxG.camera.bounds.right - width;
+			}
+			
+			if (y < 0)
+			{
+				y = 0;
+			}
+			else if (y + height > FlxG.camera.bounds.bottom)
+			{
+				y = FlxG.camera.bounds.bottom - height;
 			}
 			
 			updateTilePositions();

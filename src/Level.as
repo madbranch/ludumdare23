@@ -9,18 +9,20 @@ package
 		// We load the tile map information.
 		[Embed(source='/../resources/mapCSV_Group1_Main.csv', mimeType='application/octet-stream')] public var mapCSV:Class;
 		
-		[Embed(source='/../resources/tileset.png')] public var tilesetGraphic:Class;
+		[Embed(source='/../resources/tileset.png')] public var TilesetGraphic:Class;
 		
 		private static const LEVEL_0_BG_COLOR:uint = 0xff444444;
-		private static const LEVEL_1_BG_COLOR:uint = 0xff00006c;
+		private static const LEVEL_1_BG_COLOR:uint = 0xff575290;
 		private static const LEVEL_2_BG_COLOR:uint = 0xff85beff;
 		
 		public static const TILE_SIZE:Number = 8;
-		private static const TILESET_WIDTH:int = 18;
-		private static const TILESET_HEIGHT:int = 8;
-		private static const TILESET_SIZE:int = TILESET_WIDTH * TILESET_HEIGHT;
+		public static const TILESET_WIDTH:int = 52;
+		public static const TILESET_HEIGHT:int = 8;
+		public static const TILESET_SIZE:int = TILESET_WIDTH * TILESET_HEIGHT;
 		
 		public var map:FlxTilemap;
+		public var tigers:Tigers;
+		public var star:Star;
 		
 		public var width:int;
 		public var height:int;
@@ -35,13 +37,12 @@ package
 			FlxG.bgColor = LEVEL_0_BG_COLOR;
 			
 			map = new FlxTilemap();
-			map.loadMap(new mapCSV, tilesetGraphic, TILE_SIZE, TILE_SIZE, FlxTilemap.OFF, 0, 1, 144);
+			map.loadMap(new mapCSV, TilesetGraphic, TILE_SIZE, TILE_SIZE, FlxTilemap.OFF, 0, 1, TILESET_SIZE);
 
 			initTileProperties();
 			
 			width = map.width - TILE_SIZE;
 			height = map.height;
-			
 			
 			_currentLevel = 0;
 			
@@ -51,10 +52,15 @@ package
 			}
 			
 			_plasma = FlxSpecialFX.plasma();
-			_soPretty = _plasma.create(0, 0, 78, 80, 5, 5);
+			_soPretty = _plasma.create(0, 0, 109, 71, 8, 8);
+			_soPretty.allowCollisions = FlxObject.NONE;
+			
+			initializeTigers();
+			initializePickups();
 			
 			add(_soPretty);
 			add(map);
+			
 			_soPretty.visible = false;
 		}
 		
@@ -131,9 +137,44 @@ package
 			var offset:int;
 			for (var i:int = 0; i < TILESET_SIZE; i += TILESET_WIDTH)
 			{
+				map.setTileProperties(i, FlxObject.NONE);
 				map.setTileProperties(1 + i, FlxObject.UP);
-				map.setTileProperties(2 + i, FlxObject.ANY);
+				for (var j : int = 2; j < TILESET_WIDTH; ++j)
+				{
+					map.setTileProperties(j + i, FlxObject.ANY);
+				}
 			}
+			
+			// Unlocked level 1 tiles.
+			map.setTileProperties(TILESET_WIDTH * 1 + 49, FlxObject.NONE);
+			
+			// Unlocked level 2 tiles.
+			map.setTileProperties(TILESET_WIDTH * 2 + 49, FlxObject.NONE);
+			map.setTileProperties(TILESET_WIDTH * 2 + 50, FlxObject.NONE);
+			
+			// Unlocked level 3 tiles.
+			map.setTileProperties(TILESET_WIDTH * 3 + 49, FlxObject.NONE);
+			map.setTileProperties(TILESET_WIDTH * 3 + 50, FlxObject.NONE);
+			map.setTileProperties(TILESET_WIDTH * 3 + 51, FlxObject.NONE);
+		}
+		
+		private function initializeTigers() : void
+		{
+			tigers = new Tigers();
+			
+			tigers.addTiger(12, 11);
+			tigers.addTiger(3, 22);
+			tigers.addTiger(33, 15);
+		}
+		
+		private function initializePickups() : void
+		{
+			star = new Star(3, 12);
+		}
+		
+		public static function isTileIdCollidable(tileId:uint) : Boolean
+		{
+			return tileId % TILESET_WIDTH >= 2;
 		}
 	}
 }
