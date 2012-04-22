@@ -26,6 +26,14 @@
                    background-color: ${bgcolor}; }   
             object:focus { outline:none; }
             #flashContent { display:none; }
+            
+            #instructions {
+                margin:auto;
+                width:640px;
+                font-family:monospace;
+                white-space: pre;
+                text-align:left;
+            }
         </style>
         
         <!-- Enable Browser History by replacing useBrowserHistory tokens with two hyphens -->
@@ -75,7 +83,15 @@
                                 + pageHost + "www.adobe.com/images/shared/download_buttons/get_flash_player.gif' alt='Get Adobe Flash player' /></a>" ); 
             </script> 
         </div>
-        
+		<div id="instructions">
+            <h3>Instructions</h3>
+            UP           : Jump.
+            LEFT & RIGHT : Move left and right. 
+            Z            : Place a block.
+            X            : Pick up a block.
+            A, S, D & F  : Switch between parallel worlds (each world must be
+                           unlocked before being available).
+        </div>        
         <noscript>
             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="${width}" height="${height}" id="${application}">
                 <param name="movie" value="${swf}.swf" />
