@@ -18,6 +18,9 @@ package
 		[Embed(source = "/../resources/hurt.mp3")] public var DeathSfx:Class;
 		// World switch sound.
 		[Embed(source = "/../resources/switch.mp3")] public var SwitchSfx:Class;
+		// Block interaction sounds.
+		[Embed(source = "/../resources/pickup_block.mp3")] public var PickupBlockSfx:Class;
+		[Embed(source = "/../resources/place_block.mp3")] public var PlaceBlockSfx:Class;
 		
 		private var player:Player;
 		private var level:Level;
@@ -29,6 +32,7 @@ package
 		private var level2Control:FlxSprite;
 		private var level3Control:FlxSprite;
 		private var selector:FlxSprite;
+		private var particles:ParticleManager;
 		
 		override public function create():void
 		{
@@ -67,6 +71,8 @@ package
 			
 			initializeControlDisplay();
 			
+			particles = new ParticleManager();
+			
 			add(level);
 			add(player);
 			add(level.tigers);
@@ -80,6 +86,7 @@ package
 			add(level2Control);
 			add(level3Control);
 			add(selector);
+			add(particles);
 			
 			setCurrentLevel(0);
 			// Watches for debugging.
@@ -101,6 +108,8 @@ package
 					level.map.setTile(player.tileInFront.x, player.tileInFront.y, level.getCurrentPickable(), true);
 					--player.nbTiles;
 					score.text = player.nbTiles.toString();
+					FlxG.play(PlaceBlockSfx);
+					particles.boom(player.cursor.x + player.cursor.width * 0.5, player.cursor.y + player.cursor.height * 0.5);
 				}
 			}
 			else if (FlxG.keys.justPressed("X"))
@@ -110,6 +119,7 @@ package
 					level.map.setTile(player.tileInFront.x, player.tileInFront.y, level.getCurrentEmpty(), true);
 					++player.nbTiles;
 					score.text = player.nbTiles.toString();
+					FlxG.play(PickupBlockSfx);
 				}
 			}
 			else if (FlxG.keys.justPressed("A"))
@@ -147,7 +157,7 @@ package
 				
 				if (level.leaf.alive)
 				{
-					FlxG.overlap(player, level.sun, hitLeaf);
+					FlxG.overlap(player, level.leaf, hitLeaf);
 				}
 				
 				if (level.map.getTile(player.tilePosition.x, player.tilePosition.y) == level.getCurrentSpike())
@@ -277,7 +287,7 @@ package
 		{
 			FlxG.play(DeathSfx);
 			Player(player).restart();
-			FlxG.flash(0xffff0000);
+			FlxG.flash(0xffff0000,0.7, null, true);
 		}
 	}
 }

@@ -20,7 +20,7 @@ package
 		public var tileInFront:FlxPoint;
 		public var nbTiles:uint;
 		
-		private var _cursor:FlxSprite;
+		public var cursor:FlxSprite;
 		private var _currentLevel:int;
 		private var _start:FlxPoint;
 		
@@ -71,7 +71,7 @@ package
 			FlxControl.player1.setSounds(fs);
 			
 			// We initialize the cursor.
-			_cursor = new FlxSprite(0, 0, CursorGraphic);
+			cursor = new FlxSprite(0, 0, CursorGraphic);
 			
 			// When created, the player faces right by default.
 			facing = FlxObject.RIGHT;
@@ -111,8 +111,8 @@ package
 		override public function destroy(): void
 		{
 			super.destroy();
-			_cursor.destroy();
-			_cursor = null;
+			cursor.destroy();
+			cursor = null;
 			tilePosition = null;
 			tileInFront = null;
 		}
@@ -130,14 +130,14 @@ package
 				tileInFront.x = tilePosition.x + 1;
 			}
 			tileInFront.y = tilePosition.y;
-			_cursor.x = tileInFront.x * Level.TILE_SIZE;
-			_cursor.y = tileInFront.y * Level.TILE_SIZE;
+			cursor.x = tileInFront.x * Level.TILE_SIZE;
+			cursor.y = tileInFront.y * Level.TILE_SIZE;
 		}
 		
 		override public function update():void
 		{
 			super.update();
-			_cursor.update();
+			cursor.update();
 			
 			// We make sure the player doesn't leave the screen.
 			if (x < 0)
@@ -181,19 +181,19 @@ package
 		override public function preUpdate(): void
 		{
 			super.preUpdate();
-			_cursor.preUpdate();
+			cursor.preUpdate();
 		}
 		
 		override public function postUpdate(): void
 		{
 			super.postUpdate();
-			_cursor.postUpdate();
+			cursor.postUpdate();
 		}
 		
 		override public function draw(): void
 		{
 			super.draw();
-			_cursor.draw();
+			cursor.draw();
 		}
 		
 		public function get currentLevel(): int

@@ -175,6 +175,7 @@ package
 			tigers.addTiger(33, 15);
 			tigers.addTiger(48, 16);
 			tigers.addTiger(40, 18);
+			tigers.addTiger(16, 26);
 		}
 		
 		private function initializePickups() : void
